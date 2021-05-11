@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import scipy as sp
 from scipy import integrate
 from tqdm import tqdm
-from numpy.fft import fft, ifft, fftfreq
+
 
 
 def f(t):
@@ -30,18 +30,18 @@ def GetFourier(t,T,N):
 	
 
     
-    return y-np.pi
+    return a0, y-np.pi
 
 
 
 t = np.arange(-np.pi,np.pi,0.001)
-y = GetFourier(t,2*np.pi,150)
+a0, y = GetFourier(t,2*np.pi,150)
 
-
-
-
-
-
+valor=np.trapz(y,t)
+print("Valor aprox ")
+print(valor/(a0*np.pi)) #por normalización de integral y(t)dt
+print("Valor real ")
+print(np.pi**6 /945)
 
 
 
