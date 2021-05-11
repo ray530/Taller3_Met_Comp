@@ -43,10 +43,10 @@ print(v)
 sol=np.vstack((v[0],v[1],v[2],v[3],v[4],v[5],v[6],v[7],v[8],v[9]))
 print(sol)
 
-np.savetxt('dat_solucionp4.dat',sol)
+np.savetxt('dat_solucionp1.dat',sol)
 
 
-v1x, v1y, v2x, v2y, w1, w2 = np.loadtxt('dat_solucionp4.dat', unpack=True)
+v1x, v1y, v2x, v2y, w1, w2 = np.loadtxt('dat_solucionp1.dat', unpack=True)
 #print(w1)
 
 plt.figure(figsize=(10,8))
