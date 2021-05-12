@@ -1,15 +1,11 @@
-
-import astropy.constants as const
-import astropy.units as units
 import matplotlib.pyplot as plt
-
+from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
+from scipy import integrate 
 
 #G = const.G.to('au^3/(M_sun year^2)')
 G=4*np.pi**2
 print(G)
-
-
 
 M=1.
 alfa=1.1*10**(-8)
@@ -37,8 +33,6 @@ def cond(ODE,h,t,q0):
 	r[1] = y+ODE(t,q0)[1]*h+((h**2)/2)*ODE(t,q0)[3] 
 	return r
 
-
-
 def RK4(ODE, h, t0, q0):
 
 	k11 = h*ODE(t0, q0)
@@ -53,31 +47,28 @@ def RK4(ODE, h, t0, q0):
 
 	return q1
 
-
-
 a=0.387
 e=0.20563
-
 
 r0 = [a*(1+e), 0.0]
 v0 = [0.0, np.sqrt((G*1/a) * ((1-e)/(1+e)))]
 
-# Creation of the time grid (in years)
+# tiempo
 t_0 = 0.
-t_f = 2.5
+t_f = 2.5 #tiempo de 10 orbitas, 88 dias por orbita. 
 
-# Number of steps in the grid
-n = 1500000
+# no. de pasos
+n = 150000
 
-# Constant stepsize defined by the number of steps in the grid
-h = (t_f - t_0)/n
+# intervalo 
+h = (t_f - t_0)/n #parecido al orden de alfa
 
-# Arrays to store the solution
-t = np.linspace(t_0, t_f, n) # Time information
-QR = np.zeros([4,n]) # RK4's Method information
+# inicializar vectores 
+t = np.linspace(t_0, t_f, n) 
+QR = np.zeros([4,n]) 
 cond=np.zeros([2,n])
 
-# Initial Conditions
+# Condiciones iniciales
 QR[0,0] = r0[0]
 QR[1,0] = 0.
 QR[2,0] = 0.
@@ -89,17 +80,8 @@ for i in range(1,n):
     #cond=cond(qf,h,t,q0)
     QR[:,i] = qf[:]
 
-'''
-def omega(a,e,o,t):
-	d=a*(1-e)*(1+1/e)
-	c=(e**2*d**2)/(np.sqrt(1-e**2)*(e**2-1))
-	g=(e**2*d**2)/(e**2-1)
-	return 2*np.atan(((e-1)/(np.sqrt(1-e**2)))*np.tan(o/2))*c + g*np.sin(o)/(1+e*np.cos(o))-t
-from scipy import optimize
-
-root = optimize.newton(omega(a,e,0,t), 0.)
-print(root)
-'''
+wy=QR[3,:]/np.sqrt(QR[0,:]**2+QR[1,:]**2)
+theta_y=integrate.cumulative_trapezoid(wy,t)
 
 
 plt.figure(figsize=(10,6))
@@ -109,12 +91,30 @@ plt.xlabel(r'$x$')
 plt.ylabel(r'$y$')
 plt.legend()
 
-
-from mpl_toolkits.mplot3d import Axes3D
+plt.figure(figsize=(10,6))
+plt.plot(t[:-1], -theta_y/2062.6481 , color='cornflowerblue', label=f'$h=$ {h:.2e}')
+plt.title('variacion angular')
+plt.xlabel(r'$t$')
+plt.ylabel(r'$\theta_y \ ar/siglo$')
+plt.legend()
 
 fig = plt.figure(figsize=(7,6))
 ax = fig.add_subplot(111, projection='3d')
 ax = fig.gca(projection='3d')
-ax.plot(QR[0,:], QR[1,:], t, label='parametric curve')
+ax.plot(QR[0,:], QR[1,:], t, label='orbita de Mercurio')
+ax.set_xlabel(r'$x$')
+ax.set_ylabel(r'$y$')
+ax.set_zlabel(r'$t$')
 ax.legend()
+
+'''
+fig = plt.figure(figsize=(7,6))
+ax = fig.add_subplot(111, projection='3d')
+ax = fig.gca(projection='3d')
+ax.plot(QR[2,:], QR[3,:], t, label='velocidades')
+ax.set_xlabel(r'$V_x$')
+ax.set_ylabel(r'$V_y$')
+ax.set_zlabel(r'$t$')
+ax.legend()
+'''
 plt.show()
